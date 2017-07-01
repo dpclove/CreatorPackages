@@ -182,8 +182,9 @@ module.exports = {
 		var btnOp = [];
 		var nameGroup = {};
 		var createGroup = [];
+		var listViewOp = [];
 		var path = '';
-		this.getAllChildInfo(node,path,outOp,btnOp,nameGroup,createGroup,true);
+		this.getAllChildInfo(node,path,outOp,btnOp,nameGroup,createGroup,listViewOp,true);
 		
 		for(var i=0;i<createGroup.length;i++){
 			this.makeScript2(createGroup[i]);
@@ -194,7 +195,7 @@ module.exports = {
 		for(var i =0;i<outOp.length;i++){
 			Editor.log(outOp[i].name);
 		}
-		var code = this.generateClass(name,'View','',prefabName,outOp,btnOp);
+		var code = this.generateClass(name,'View','',prefabName,outOp,btnOp,listViewOp);
 		Fs.ensureDirSync(Path.dirname(prefabPath));
 		var codeData = code;
 		Fs.writeFileSync(prefabPath, codeData);
@@ -209,8 +210,9 @@ module.exports = {
 		var btnOp = [];
 		var nameGroup = {};
 		var createGroup = [];
+		var listViewOp = [];
 		var path = '';
-		this.getAllChildInfo(node,path,outOp,btnOp,nameGroup,createGroup,true);
+		this.getAllChildInfo(node,path,outOp,btnOp,nameGroup,createGroup,listViewOp,true);
 		
 		// for(var i=0;i<createGroup.length;i++){
 			// this.makeScript(createGroup[i]);
@@ -220,7 +222,7 @@ module.exports = {
 		for(var i =0;i<outOp.length;i++){
 			Editor.log(outOp[i].name);
 		}
-		var code = this.generateClass(name,'Inner','../',prefabName,outOp,btnOp);
+		var code = this.generateClass(name,'Inner','../',prefabName,outOp,btnOp,listViewOp);
 		Fs.ensureDirSync(Path.dirname(prefabPath));
 		var codeData = code;
 		Fs.writeFileSync(prefabPath, codeData);
@@ -240,7 +242,7 @@ module.exports = {
 		
 
 	},
-	getAllChildInfo:function(node,path,outOp,btnOp,nameGroup,createGroup,isRoot){
+	getAllChildInfo:function(node,path,outOp,btnOp,nameGroup,createGroup,listViewOp,isRoot){
 		
 		var nodeName = '';
 		if(!isRoot){
@@ -259,9 +261,11 @@ module.exports = {
 		}
 		var isReturn = false;
 		
-		if(node.group == VIEW_PROPERTY){
+		if(node.group == VIEW_PROPERTY|| node.group == MASK_SPRITE){
 			var typeValue = 'cc.Node';
-			if(node.getComponent(cc.Toggle) != null){
+			if(node.getComponent('MaskSprite')){
+				typeValue = 'MaskSprite';
+			}else if(node.getComponent(cc.Toggle) != null){
 				typeValue = 'cc.Toggle';
 			}else if(node.getComponent(cc.Button) != null){
 				typeValue = 'cc.Button';
@@ -281,9 +285,9 @@ module.exports = {
 				isReturn = true;
 			}
 			outOp.push({name:comName,path:nodeName,type:typeValue});
-		}else if(node.group == MASK_SPRITE){
-			var typeValue = MASK_SPRITE;
-			outOp.push({name:comName,path:nodeName,type:typeValue});
+		// }else if(node.group == MASK_SPRITE){
+			// var typeValue = MASK_SPRITE;
+			// outOp.push({name:comName,path:nodeName,type:typeValue});
 		}else if(node.group == CREAT_EROOM_INNER){
 			// this.checkChild(node);
 			// this.makeScript(node);
@@ -293,6 +297,12 @@ module.exports = {
 				return;
 			}
 		}else{
+			if(node.getComponent(cc.Slider) != null){
+				var typeValue = 'cc.Slider';
+				outOp.push({name:comName,path:nodeName,type:typeValue});
+				isReturn = true;
+			}
+			
 			if(node.getComponent(cc.Toggle) != null){
 				var typeValue = 'cc.Toggle';
 				//btnOp.push({name:comName,path:nodeName,type:typeValue});
@@ -308,13 +318,18 @@ module.exports = {
 				var typeValue = 'NumChose';
 				outOp.push({name:comName,path:nodeName,type:typeValue});
 				isReturn = true;
+			}else if(node.getComponent('ListViewCtrl')){
+				var typeValue = '"ListViewCtrl"';
+				listViewOp.push({name:comName,path:nodeName,type:typeValue});
+				outOp.push({name:comName,path:nodeName,type:typeValue});
+				isReturn = true;
 			}
 		}
 		if(isReturn == true){
 			return;
 		}
 		for(var i=0;i<node.children.length;i++){
-			this.getAllChildInfo(node.children[i],nodeName,outOp,btnOp,nameGroup,createGroup,false);
+			this.getAllChildInfo(node.children[i],nodeName,outOp,btnOp,nameGroup,createGroup,listViewOp,false);
 		}
 	},
 	GetComName :function(name){
@@ -328,7 +343,7 @@ module.exports = {
 		str = str.replace(' ','');
 		return str.substr(0,1).toLowerCase() + str.substr(1);
 	},
-	generateClass : function(name,endName,spName,prefabName,outOp,btnOp){
+	generateClass : function(name,endName,spName,prefabName,outOp,btnOp,listViewOp){
 		
 		var code = new StringBuilder('');
 		var className = 'Base'+name+endName;//'View';
@@ -358,7 +373,9 @@ module.exports = {
 		
 		code.Append(TAB1).AppendLine('properties: {');
 		for(var i=0;i<outOp.length;i++){
-			code.Append(TAB2).AppendLine('_'+this.LowerFirstLetter(outOp[i].name)+':'+outOp[i].type+',');
+			if(outOp[i].type!='"ListViewCtrl"'){
+				code.Append(TAB2).AppendLine('_'+this.LowerFirstLetter(outOp[i].name)+':'+outOp[i].type+',');
+			}
 		}
 		code.Append(TAB1).AppendLine('},');
 		
@@ -372,10 +389,12 @@ module.exports = {
 				code.Append(TAB2).AppendLine('this._'+this.LowerFirstLetter(outOp[i].name)+' = cc.find("'+outOp[i].path+'",this.node);');
 			}else{
 				code.Append(TAB2).AppendLine('this._'+this.LowerFirstLetter(outOp[i].name)+' = cc.find("'+outOp[i].path+'",this.node).getComponent('+outOp[i].type+');');
-				if(outOp[i].type == MASK_SPRITE){
+				if(outOp[i].type == 'MaskSprite'){
 					code.Append(TAB2).AppendLine('this.initMaskSprite(this._'+this.LowerFirstLetter(outOp[i].name)+');');
 				}else if(outOp[i].type == 'cc.Toggle'){
 					code.Append(TAB2).AppendLine('this.addToggleClick(this._'+this.LowerFirstLetter(outOp[i].name)+');');
+				}else if(outOp[i].type == 'cc.Slider'){
+					code.Append(TAB2).AppendLine('this.addSlideEvent(this._'+this.LowerFirstLetter(outOp[i].name)+');');
 				}
 			}
 			
@@ -431,9 +450,32 @@ module.exports = {
 		code.Append(TAB1).AppendLine('},');
 		
 		
+		
+		code.Append(TAB1).AppendLine('addSlideEvent:function (slider) {')
+        code.Append(TAB2).AppendLine('var eventHandler = new cc.Component.EventHandler();')
+        code.Append(TAB2).AppendLine('eventHandler.target = this.node;')
+        code.Append(TAB2).AppendLine('eventHandler.component = "'+className+'";');
+		code.Append(TAB2).AppendLine('eventHandler.handler = "onSlideEvent";')
+        code.Append(TAB2).AppendLine('slider.slideEvents.push(eventHandler);')
+		code.Append(TAB1).AppendLine('},')
+		code.Append(TAB1).AppendLine('onSlideEvent:function (sender, eventType) {')
+		code.Append(TAB2).AppendLine('this._super();')
+		code.Append(TAB2).AppendLine('this.onSlideEventBack(sender, eventType);')
+		code.Append(TAB1).AppendLine('},')
+		code.Append(TAB1).AppendLine('onSlideEventBack:function (sender, eventType) {')
+			
+		code.Append(TAB1).AppendLine('},')
+		
+		
+		
 		code.Append(TAB1).AppendLine('onMaskSpriteTouched:function () {');
 		code.Append(TAB2).AppendLine('//need extend');
 		code.Append(TAB1).AppendLine('},');
+		
+		if(listViewOp.length>0){
+			code.Append(TAB1).AppendLine('//TODO ListView');
+		}
+		
 		
 		code.Append('});');
 		return code.ToString();
