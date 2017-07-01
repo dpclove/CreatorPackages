@@ -263,7 +263,7 @@ module.exports = {
 		
 		if(node.group == VIEW_PROPERTY|| node.group == MASK_SPRITE){
 			var typeValue = 'cc.Node';
-			if(node.getComponent('MaskSprite')){
+			if(node.getComponent('MaskSprite')!= null){
 				typeValue = 'MaskSprite';
 			}else if(node.getComponent(cc.Toggle) != null){
 				typeValue = 'cc.Toggle';
@@ -303,7 +303,10 @@ module.exports = {
 				isReturn = true;
 			}
 			
-			if(node.getComponent(cc.Toggle) != null){
+			if(node.getComponent('MaskSprite')!= null){
+				var typeValue = 'MaskSprite';
+				outOp.push({name:comName,path:nodeName,type:typeValue});
+			}else if(node.getComponent(cc.Toggle) != null){
 				var typeValue = 'cc.Toggle';
 				//btnOp.push({name:comName,path:nodeName,type:typeValue});
 				outOp.push({name:comName,path:nodeName,type:typeValue});
