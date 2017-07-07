@@ -261,7 +261,7 @@ module.exports = {
 		}
 		var isReturn = false;
 		
-		if(node.group == VIEW_PROPERTY|| node.group == MASK_SPRITE){
+		if(node.group == VIEW_PROPERTY || node.group == MASK_SPRITE){
 			var typeValue = 'cc.Node';
 			if(node.getComponent('MaskSprite')!= null){
 				typeValue = 'MaskSprite';
@@ -274,6 +274,8 @@ module.exports = {
 				typeValue = 'cc.Sprite';
 			}else if(node.getComponent(cc.EditBox)!= null){
 				typeValue = 'cc.EditBox';
+			}else if(node.getComponent(cc.RichText)!= null){
+				typeValue = 'cc.RichText';
 			}else if(node.getComponent(cc.Label)!= null){
 				typeValue = 'cc.Label';
 			}else if(node.getComponent(cc.PageView)!= null){
