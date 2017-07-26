@@ -112,6 +112,7 @@ const VIEW_UI = "ViewUI";
 const VIEW_PROPERTY = "ViewProperty";
 const MASK_SPRITE = "MaskSprite";
 const CREAT_EROOM_INNER = "CreateRoomInner";
+const VIEW_CELL = "ViewCell";
 
 module.exports = {
     'exportUIScene': function (event) {
@@ -263,7 +264,9 @@ module.exports = {
 		
 		if(node.group == VIEW_PROPERTY || node.group == MASK_SPRITE){
 			var typeValue = 'cc.Node';
-			if(node.getComponent('MaskSprite')!= null){
+			if(node.getComponent(cc.ScrollView)!= null){
+				typeValue = 'cc.ScrollView';
+			}else if(node.getComponent('MaskSprite')!= null){
 				typeValue = 'MaskSprite';
 			}else if(node.getComponent(cc.Toggle) != null){
 				typeValue = 'cc.Toggle';
@@ -298,6 +301,11 @@ module.exports = {
 				createGroup.push(node);
 				return;
 			}
+		}else if(node.group == VIEW_CELL){
+			var typeValue = 'cc.Node';
+			node.active = false;
+			outOp.push({name:comName,path:nodeName,type:typeValue});
+			isReturn = true;
 		}else{
 			if(node.getComponent(cc.Slider) != null){
 				var typeValue = 'cc.Slider';

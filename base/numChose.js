@@ -16,6 +16,8 @@ Vue.component('aa-inspector', {
 		<ui-prop v-prop="target.initNormalNum"></ui-prop>
 	</div>
 	<div v-if="target.type.value === 1">
+		<ui-prop v-prop="target.spType"></ui-prop>
+		<ui-prop v-prop="target.minCount"></ui-prop>
 		<ui-prop v-prop="target.initStListNum"></ui-prop>
 		<ui-prop v-prop="target.preAdd"></ui-prop>
 		<cc-array-prop :target.sync="target.special"></cc-array-prop>
