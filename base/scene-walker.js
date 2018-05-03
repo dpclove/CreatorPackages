@@ -108,6 +108,7 @@ const TAB3 = "\t\t\t";
 const TAB4 = "\t\t\t\t";
 const TAB5 = "\t\t\t\t\t";
 
+const NOT_EXPORT = "NotExport";
 const VIEW_UI = "ViewUI";
 const VIEW_PROPERTY = "ViewProperty";
 const MASK_SPRITE = "MaskSprite";
@@ -115,12 +116,61 @@ const CREAT_EROOM_INNER = "CreateRoomInner";
 const VIEW_CELL = "ViewCell";
 
 module.exports = {
-    'exportUIScene': function (event) {
+	'exportScene':function(event){
+		var canvas = cc.find('Canvas');
+		var path = Path.join(Editor.remote.projectPath,'assets','resources');
+		resourcePath = path;
+		scriptsPath = Path.join(Editor.remote.projectPath,'assets','script');
+		Editor.log('ExportSceneStart');
+		var sceneRoot = canvas.getComponent('SceneRoot');
+		
+		if(sceneRoot){
+			Editor.log(sceneRoot.scriptName);
+			if(sceneRoot.scriptName){
+			}else{
+				Editor.log('sceneRoot.scriptName is null');
+				return 
+			}
+			this.makeScriptScene(canvas,sceneRoot.scriptName);
+			
+			Editor.assetdb.refresh(AssetsRootUrl,function (err, results) {
+				
+			});
+			Editor.assetdb.refresh(scriptsRootUrl,function (err, results) {
+				
+			});
+			
+			Editor.log('ExportSceneEnd');
+		}
+	},
+	makeScriptScene:function(node,scriptName){
+		var name = scriptName;
+		var prefabName = node.name;
+		var prefabPath = Path.join(scriptsPath,'ui','baseScenes', 'Base'+name + 'Scene.js');
+		Editor.log(prefabPath)
+		var outOp = [];
+		var btnOp = [];
+		var nameGroup = {};
+		var createGroup = [];
+		var listViewOp = [];
+		var path = '';
+		this.getAllChildInfo(node,path,outOp,btnOp,nameGroup,createGroup,listViewOp,true);
+		
+		for(var i =0;i<outOp.length;i++){
+			Editor.log(outOp[i].name);
+		}
+		var code = this.generateClassScene(name,'Scene','',prefabName,outOp,btnOp,listViewOp);
+		Fs.ensureDirSync(Path.dirname(prefabPath));
+		var codeData = code;
+		Fs.writeFileSync(prefabPath, codeData);
+		Editor.log(code);
+	},
+    'exportUI': function (event) {
         var canvas = cc.find('Canvas');
 		var path = Path.join(Editor.remote.projectPath,'assets','resources');
 		resourcePath = path;
 		scriptsPath = Path.join(Editor.remote.projectPath,'assets','script');
-        Editor.log('ExportUISceneStart');
+        Editor.log('ExportUIStart');
 		Editor.log(Editor.remote.projectPath);
 		// var childs = canvas.children;
 		// for(var i = 0;i<childs.length ;i++){
@@ -142,7 +192,7 @@ module.exports = {
 			
 		});
 		
-        Editor.log('ExportUISceneEnd');
+        Editor.log('ExportUIEnd');
     },
 	checkChild:function(uichilds){
 		for(var i = 0;i<uichilds.length ;i++){
@@ -306,6 +356,8 @@ module.exports = {
 			node.active = false;
 			outOp.push({name:comName,path:nodeName,type:typeValue});
 			isReturn = true;
+		}else if(node.group == NOT_EXPORT){
+			isReturn = true;
 		}else{
 			if(node.getComponent(cc.Slider) != null){
 				var typeValue = 'cc.Slider';
@@ -356,6 +408,133 @@ module.exports = {
 		str = str.replace(' ','');
 		return str.substr(0,1).toLowerCase() + str.substr(1);
 	},
+	generateClassScene : function(name,endName,spName,prefabName,outOp,btnOp,listViewOp){
+		
+		var code = new StringBuilder('');
+		var className = 'Base'+name+endName;//'View';
+		code.AppendLine('/**');
+		code.AppendLine('*CreateBySystem did not editor');
+		code.AppendLine('*ClassName ' + className);
+		code.AppendLine('*/');
+		
+		
+		code.AppendLine('var ViewBase = require(\''+spName+'../viewMgr/ViewBase\');');
+		
+		code.AppendLine('cc.Class({');
+		Editor.log(name);
+	
+		//code.Append(TAB1).AppendLine('name:"'+className+'",');
+		
+		code.Append(TAB1).AppendLine('extends: ViewBase,');
+		
+		code.Append(TAB1).AppendLine('statics: {');
+		code.Append(TAB2).AppendLine('viewName :"'+className+'",');
+		code.Append(TAB1).AppendLine('},');
+		
+		code.Append(TAB1).AppendLine('properties: {');
+		for(var i=0;i<outOp.length;i++){
+			if(outOp[i].type!='"ListViewCtrl"'){
+				code.Append(TAB2).AppendLine('_'+this.LowerFirstLetter(outOp[i].name)+':'+outOp[i].type+',');
+			}
+		}
+		code.Append(TAB1).AppendLine('},');
+		
+		// code.Append(TAB1).AppendLine('onLoad: function () {');
+		// code.Append(TAB2).AppendLine('this.doCreate();');
+		// code.Append(TAB1).AppendLine('},');
+		
+		code.Append(TAB1).AppendLine('doCreate: function () {');
+		for(var i=0;i<outOp.length;i++){
+			if(outOp[i].type =='cc.Node'){
+				code.Append(TAB2).AppendLine('this._'+this.LowerFirstLetter(outOp[i].name)+' = cc.find("'+outOp[i].path+'",this.node);');
+			}else{
+				code.Append(TAB2).AppendLine('this._'+this.LowerFirstLetter(outOp[i].name)+' = cc.find("'+outOp[i].path+'",this.node).getComponent('+outOp[i].type+');');
+				if(outOp[i].type == 'MaskSprite'){
+					code.Append(TAB2).AppendLine('this.initMaskSprite(this._'+this.LowerFirstLetter(outOp[i].name)+');');
+				}else if(outOp[i].type == 'cc.Toggle'){
+					code.Append(TAB2).AppendLine('this.addToggleClick(this._'+this.LowerFirstLetter(outOp[i].name)+');');
+				}else if(outOp[i].type == 'cc.Slider'){
+					code.Append(TAB2).AppendLine('this.addSlideEvent(this._'+this.LowerFirstLetter(outOp[i].name)+');');
+				}
+			}
+			
+		}
+		
+		for(var i =0;i<btnOp.length;i++){
+		
+			code.Append(TAB2).AppendLine('this.addButtonClick(this._'+this.LowerFirstLetter(btnOp[i].name)+');');
+		}
+	
+		code.Append(TAB1).AppendLine('},');
+		
+		
+		code.Append(TAB1).AppendLine('addButtonClick: function (button) {');
+		
+		code.Append(TAB2).AppendLine('var clickEventHandler = new cc.Component.EventHandler();');
+		code.Append(TAB2).AppendLine('clickEventHandler.target = this.node;');
+        code.Append(TAB2).AppendLine('clickEventHandler.component = "'+className+'";');
+        code.Append(TAB2).AppendLine('clickEventHandler.handler = "onButtonClick";');
+		code.Append(TAB2).AppendLine('clickEventHandler.customEventData = "button";');
+		code.Append(TAB2).AppendLine('button.clickEvents.push(clickEventHandler);');
+		
+		code.Append(TAB1).AppendLine('},');
+		
+		code.Append(TAB1).AppendLine('onButtonClick:function (event,customEventData) {');
+		code.Append(TAB2).AppendLine('this._super();');
+        code.Append(TAB2).AppendLine('this.onButtonClicked(event,customEventData);');
+		code.Append(TAB1).AppendLine('},');
+		
+		code.Append(TAB1).AppendLine('onButtonClicked:function (event,customEventData) {');
+
+		code.Append(TAB2).AppendLine('//need extend');
+		code.Append(TAB1).AppendLine('},');
+		
+		code.Append(TAB1).AppendLine('addToggleClick: function (toggle) {');
+		
+		code.Append(TAB2).AppendLine('var clickEventHandler = new cc.Component.EventHandler();');
+		code.Append(TAB2).AppendLine('clickEventHandler.target = this.node;');
+        code.Append(TAB2).AppendLine('clickEventHandler.component = "'+className+'";');
+        code.Append(TAB2).AppendLine('clickEventHandler.handler = "onToggleClick";');
+		code.Append(TAB2).AppendLine('clickEventHandler.customEventData = "toggle";');
+		code.Append(TAB2).AppendLine('toggle.checkEvents.push(clickEventHandler);');
+		
+		code.Append(TAB1).AppendLine('},');
+		
+		code.Append(TAB1).AppendLine('onToggleClick:function (target,customEventData) {');
+		code.Append(TAB2).AppendLine('this._super();');
+        code.Append(TAB2).AppendLine('this.onToggleClicked(target,customEventData);');
+		code.Append(TAB1).AppendLine('},');
+		code.Append(TAB1).AppendLine('onToggleClicked:function (target,customEventData) {');
+
+		code.Append(TAB2).AppendLine('//need extend');
+		code.Append(TAB1).AppendLine('},');
+		
+		
+		
+		code.Append(TAB1).AppendLine('addSlideEvent:function (slider) {')
+        code.Append(TAB2).AppendLine('var eventHandler = new cc.Component.EventHandler();')
+        code.Append(TAB2).AppendLine('eventHandler.target = this.node;')
+        code.Append(TAB2).AppendLine('eventHandler.component = "'+className+'";');
+		code.Append(TAB2).AppendLine('eventHandler.handler = "onSlideEvent";')
+        code.Append(TAB2).AppendLine('slider.slideEvents.push(eventHandler);')
+		code.Append(TAB1).AppendLine('},')
+		code.Append(TAB1).AppendLine('onSlideEvent:function (sender, eventType) {')
+		code.Append(TAB2).AppendLine('this._super();')
+		code.Append(TAB2).AppendLine('this.onSlideEventBack(sender, eventType);')
+		code.Append(TAB1).AppendLine('},')
+		code.Append(TAB1).AppendLine('onSlideEventBack:function (sender, eventType) {')
+			
+		code.Append(TAB1).AppendLine('},')
+		if(listViewOp.length>0){
+			code.Append(TAB1).AppendLine('//TODO ListView');
+		}
+		
+		
+		code.Append('});');
+		return code.ToString();
+	},
+	
+	
 	generateClass : function(name,endName,spName,prefabName,outOp,btnOp,listViewOp){
 		
 		var code = new StringBuilder('');

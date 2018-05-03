@@ -15,7 +15,7 @@ module.exports = {
 		Editor.Panel.open('base');
 	},
 	'exportUI'(){
-		Editor.Scene.callSceneScript('base', 'exportUIScene', function (err, uuid) {
+		Editor.Scene.callSceneScript('base', 'exportUI', function (err, uuid) {
 			// Editor.log('length:'+length);
 			Editor.Ipc.sendToPanel('scene', 'scene:query-node', uuid, (error, dump) => {
 				if (error)
@@ -25,10 +25,16 @@ module.exports = {
 			});
 		});
 	},
-	'testSend2'(){
-		Editor.Scene.callSceneScript('base', 'get-canvas-children', function (err, length) {
+	'exportScene'(){
+		Editor.Scene.callSceneScript('base', 'exportScene', function (err, uuid) {
 			// Editor.log('length:'+length);
-		});
+			Editor.Ipc.sendToPanel('scene', 'scene:query-node', uuid, (error, dump) => {
+				if (error)
+					return Editor.error(error);
+				// JSON.parse(dump);
+				Editor.log(dump);
+			});
+		})
 	}
   }
 };

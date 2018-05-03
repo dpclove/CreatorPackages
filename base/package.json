@@ -1,12 +1,15 @@
 {
   "name": "base",
   "version": "0.0.1",
-  "description": "exportUI",
+  "description": "导出工具",
   "author": "dpc",
   "main": "main.js",
   "main-menu": {
 	"Package/ExportUI": {
       "message": "base:exportUI"
+    },
+	"Package/ExportScene": {
+      "message": "base:exportScene"
     }
   },
   "scene-script": "scene-walker.js",
