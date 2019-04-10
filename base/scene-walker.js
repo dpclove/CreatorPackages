@@ -114,13 +114,13 @@ const VIEW_PROPERTY = "ViewProperty";
 const MASK_SPRITE = "MaskSprite";
 const CREAT_EROOM_INNER = "CreateRoomInner";
 const VIEW_CELL = "ViewCell";
-
+const ProjectPath = Editor.Project.path;
 module.exports = {
 	'exportScene':function(event){
 		var canvas = cc.find('Canvas');
-		var path = Path.join(Editor.remote.projectPath,'assets','resources');
+		var path = Path.join(ProjectPath,'assets','resources');
 		resourcePath = path;
-		scriptsPath = Path.join(Editor.remote.projectPath,'assets','script');
+		scriptsPath = Path.join(ProjectPath,'assets','script');
 		Editor.log('ExportSceneStart');
 		var sceneRoot = canvas.getComponent('SceneRoot');
 		
@@ -167,11 +167,12 @@ module.exports = {
 	},
     'exportUI': function (event) {
         var canvas = cc.find('Canvas');
-		var path = Path.join(Editor.remote.projectPath,'assets','resources');
+		Editor.log(Editor.Project.path);
+		var path = Path.join(ProjectPath,'assets','resources');
 		resourcePath = path;
-		scriptsPath = Path.join(Editor.remote.projectPath,'assets','script');
+		scriptsPath = Path.join(ProjectPath,'assets','script');
         Editor.log('ExportUIStart');
-		Editor.log(Editor.remote.projectPath);
+		Editor.log(ProjectPath);
 		// var childs = canvas.children;
 		// for(var i = 0;i<childs.length ;i++){
 			// if(childs[i].group == 'ui'){
