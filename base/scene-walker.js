@@ -4,7 +4,7 @@ var resourcePath = '';
 var scriptsPath = '';
 const AssetsRootUrl = 'db://assets/resources/ui';
 const scriptsRootUrl = 'db://assets/script/ui';
-
+const version = "2.1";
 
 function StringBuilder()
 {
@@ -416,6 +416,7 @@ module.exports = {
 		code.AppendLine('/**');
 		code.AppendLine('*CreateBySystem did not editor');
 		code.AppendLine('*ClassName ' + className);
+        code.AppendLine('*version ' + version);
 		code.AppendLine('*/');
 		
 		
@@ -543,6 +544,7 @@ module.exports = {
 		code.AppendLine('/**');
 		code.AppendLine('*CreateBySystem did not editor');
 		code.AppendLine('*ClassName ' + className);
+        code.AppendLine('*version ' + version);
 		code.AppendLine('*/');
 		
 		
