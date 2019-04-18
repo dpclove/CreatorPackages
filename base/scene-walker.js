@@ -453,9 +453,9 @@ module.exports = {
 				if(outOp[i].type == 'MaskSprite'){
 					code.Append(TAB2).AppendLine('this.initMaskSprite(this._'+this.LowerFirstLetter(outOp[i].name)+');');
 				}else if(outOp[i].type == 'cc.Toggle'){
-					code.Append(TAB2).AppendLine('this.addToggleClick(this._'+this.LowerFirstLetter(outOp[i].name)+');');
+					code.Append(TAB2).AppendLine('this.addToggleClick(this._'+this.LowerFirstLetter(outOp[i].name)+', "'+className+'");');
 				}else if(outOp[i].type == 'cc.Slider'){
-					code.Append(TAB2).AppendLine('this.addSlideEvent(this._'+this.LowerFirstLetter(outOp[i].name)+');');
+					code.Append(TAB2).AppendLine('this.addSlideEvent(this._'+this.LowerFirstLetter(outOp[i].name)+', "'+className+'");');
 				}
 			}
 			
@@ -463,22 +463,22 @@ module.exports = {
 		
 		for(var i =0;i<btnOp.length;i++){
 		
-			code.Append(TAB2).AppendLine('this.addButtonClick(this._'+this.LowerFirstLetter(btnOp[i].name)+');');
+			code.Append(TAB2).AppendLine('this.addButtonClick(this._'+this.LowerFirstLetter(btnOp[i].name)+', "'+className+'");');
 		}
 	
 		code.Append(TAB1).AppendLine('},');
 		
 		
-		code.Append(TAB1).AppendLine('addButtonClick: function (button) {');
-		
-		code.Append(TAB2).AppendLine('var clickEventHandler = new cc.Component.EventHandler();');
-		code.Append(TAB2).AppendLine('clickEventHandler.target = this.node;');
-        code.Append(TAB2).AppendLine('clickEventHandler.component = "'+className+'";');
-        code.Append(TAB2).AppendLine('clickEventHandler.handler = "onButtonClick";');
-		code.Append(TAB2).AppendLine('clickEventHandler.customEventData = "button";');
-		code.Append(TAB2).AppendLine('button.clickEvents.push(clickEventHandler);');
-		
-		code.Append(TAB1).AppendLine('},');
+		// code.Append(TAB1).AppendLine('addButtonClick: function (button) {');
+		//
+		// code.Append(TAB2).AppendLine('var clickEventHandler = new cc.Component.EventHandler();');
+		// code.Append(TAB2).AppendLine('clickEventHandler.target = this.node;');
+        // code.Append(TAB2).AppendLine('clickEventHandler.component = "'+className+'";');
+        // code.Append(TAB2).AppendLine('clickEventHandler.handler = "onButtonClick";');
+		// code.Append(TAB2).AppendLine('clickEventHandler.customEventData = "button";');
+		// code.Append(TAB2).AppendLine('button.clickEvents.push(clickEventHandler);');
+		//
+		// code.Append(TAB1).AppendLine('},');
 		
 		code.Append(TAB1).AppendLine('onButtonClick:function (event,customEventData) {');
 		code.Append(TAB2).AppendLine('this._super();');
@@ -490,16 +490,16 @@ module.exports = {
 		code.Append(TAB2).AppendLine('//need extend');
 		code.Append(TAB1).AppendLine('},');
 		
-		code.Append(TAB1).AppendLine('addToggleClick: function (toggle) {');
-		
-		code.Append(TAB2).AppendLine('var clickEventHandler = new cc.Component.EventHandler();');
-		code.Append(TAB2).AppendLine('clickEventHandler.target = this.node;');
-        code.Append(TAB2).AppendLine('clickEventHandler.component = "'+className+'";');
-        code.Append(TAB2).AppendLine('clickEventHandler.handler = "onToggleClick";');
-		code.Append(TAB2).AppendLine('clickEventHandler.customEventData = "toggle";');
-		code.Append(TAB2).AppendLine('toggle.checkEvents.push(clickEventHandler);');
-		
-		code.Append(TAB1).AppendLine('},');
+		// code.Append(TAB1).AppendLine('addToggleClick: function (toggle) {');
+		//
+		// code.Append(TAB2).AppendLine('var clickEventHandler = new cc.Component.EventHandler();');
+		// code.Append(TAB2).AppendLine('clickEventHandler.target = this.node;');
+        // code.Append(TAB2).AppendLine('clickEventHandler.component = "'+className+'";');
+        // code.Append(TAB2).AppendLine('clickEventHandler.handler = "onToggleClick";');
+		// code.Append(TAB2).AppendLine('clickEventHandler.customEventData = "toggle";');
+		// code.Append(TAB2).AppendLine('toggle.checkEvents.push(clickEventHandler);');
+		//
+		// code.Append(TAB1).AppendLine('},');
 		
 		code.Append(TAB1).AppendLine('onToggleClick:function (target,customEventData) {');
 		code.Append(TAB2).AppendLine('this._super();');
@@ -512,20 +512,20 @@ module.exports = {
 		
 		
 		
-		code.Append(TAB1).AppendLine('addSlideEvent:function (slider) {')
-        code.Append(TAB2).AppendLine('var eventHandler = new cc.Component.EventHandler();')
-        code.Append(TAB2).AppendLine('eventHandler.target = this.node;')
-        code.Append(TAB2).AppendLine('eventHandler.component = "'+className+'";');
-		code.Append(TAB2).AppendLine('eventHandler.handler = "onSlideEvent";')
-        code.Append(TAB2).AppendLine('slider.slideEvents.push(eventHandler);')
-		code.Append(TAB1).AppendLine('},')
-		code.Append(TAB1).AppendLine('onSlideEvent:function (sender, eventType) {')
-		code.Append(TAB2).AppendLine('this._super();')
-		code.Append(TAB2).AppendLine('this.onSlideEventBack(sender, eventType);')
-		code.Append(TAB1).AppendLine('},')
-		code.Append(TAB1).AppendLine('onSlideEventBack:function (sender, eventType) {')
-			
-		code.Append(TAB1).AppendLine('},')
+		// code.Append(TAB1).AppendLine('addSlideEvent:function (slider) {')
+        // code.Append(TAB2).AppendLine('var eventHandler = new cc.Component.EventHandler();')
+        // code.Append(TAB2).AppendLine('eventHandler.target = this.node;')
+        // code.Append(TAB2).AppendLine('eventHandler.component = "'+className+'";');
+		// code.Append(TAB2).AppendLine('eventHandler.handler = "onSlideEvent";')
+        // code.Append(TAB2).AppendLine('slider.slideEvents.push(eventHandler);')
+		// code.Append(TAB1).AppendLine('},')
+		code.Append(TAB1).AppendLine('onSlideEvent:function (sender, eventType) {');
+		code.Append(TAB2).AppendLine('this._super();');
+		code.Append(TAB2).AppendLine('this.onSlideEventBack(sender, eventType);');
+		code.Append(TAB1).AppendLine('},');
+		code.Append(TAB1).AppendLine('onSlideEventBack:function (sender, eventType) {');
+        code.Append(TAB2).AppendLine('//need extend');
+		code.Append(TAB1).AppendLine('},');
 		if(listViewOp.length>0){
 			code.Append(TAB1).AppendLine('//TODO ListView');
 		}
@@ -585,9 +585,9 @@ module.exports = {
 				if(outOp[i].type == 'MaskSprite'){
 					code.Append(TAB2).AppendLine('this.initMaskSprite(this._'+this.LowerFirstLetter(outOp[i].name)+');');
 				}else if(outOp[i].type == 'cc.Toggle'){
-					code.Append(TAB2).AppendLine('this.addToggleClick(this._'+this.LowerFirstLetter(outOp[i].name)+');');
+					code.Append(TAB2).AppendLine('this.addToggleClick(this._'+this.LowerFirstLetter(outOp[i].name)+', "'+className+'");');
 				}else if(outOp[i].type == 'cc.Slider'){
-					code.Append(TAB2).AppendLine('this.addSlideEvent(this._'+this.LowerFirstLetter(outOp[i].name)+');');
+					code.Append(TAB2).AppendLine('this.addSlideEvent(this._'+this.LowerFirstLetter(outOp[i].name)+', "'+className+'");');
 				}
 			}
 			
@@ -595,22 +595,22 @@ module.exports = {
 		
 		for(var i =0;i<btnOp.length;i++){
 		
-			code.Append(TAB2).AppendLine('this.addButtonClick(this._'+this.LowerFirstLetter(btnOp[i].name)+');');
+			code.Append(TAB2).AppendLine('this.addButtonClick(this._'+this.LowerFirstLetter(btnOp[i].name)+', "'+className+'");');
 		}
 	
 		code.Append(TAB1).AppendLine('},');
 		
 		
-		code.Append(TAB1).AppendLine('addButtonClick: function (button) {');
-		
-		code.Append(TAB2).AppendLine('var clickEventHandler = new cc.Component.EventHandler();');
-		code.Append(TAB2).AppendLine('clickEventHandler.target = this.node;');
-        code.Append(TAB2).AppendLine('clickEventHandler.component = "'+className+'";');
-        code.Append(TAB2).AppendLine('clickEventHandler.handler = "onButtonClick";');
-		code.Append(TAB2).AppendLine('clickEventHandler.customEventData = "button";');
-		code.Append(TAB2).AppendLine('button.clickEvents.push(clickEventHandler);');
-		
-		code.Append(TAB1).AppendLine('},');
+		// code.Append(TAB1).AppendLine('addButtonClick: function (button) {');
+		//
+		// code.Append(TAB2).AppendLine('var clickEventHandler = new cc.Component.EventHandler();');
+		// code.Append(TAB2).AppendLine('clickEventHandler.target = this.node;');
+        // code.Append(TAB2).AppendLine('clickEventHandler.component = "'+className+'";');
+        // code.Append(TAB2).AppendLine('clickEventHandler.handler = "onButtonClick";');
+		// code.Append(TAB2).AppendLine('clickEventHandler.customEventData = "button";');
+		// code.Append(TAB2).AppendLine('button.clickEvents.push(clickEventHandler);');
+		//
+		// code.Append(TAB1).AppendLine('},');
 		
 		code.Append(TAB1).AppendLine('onButtonClick:function (event,customEventData) {');
 		code.Append(TAB2).AppendLine('this._super();');
@@ -622,16 +622,16 @@ module.exports = {
 		code.Append(TAB2).AppendLine('//need extend');
 		code.Append(TAB1).AppendLine('},');
 		
-		code.Append(TAB1).AppendLine('addToggleClick: function (toggle) {');
-		
-		code.Append(TAB2).AppendLine('var clickEventHandler = new cc.Component.EventHandler();');
-		code.Append(TAB2).AppendLine('clickEventHandler.target = this.node;');
-        code.Append(TAB2).AppendLine('clickEventHandler.component = "'+className+'";');
-        code.Append(TAB2).AppendLine('clickEventHandler.handler = "onToggleClick";');
-		code.Append(TAB2).AppendLine('clickEventHandler.customEventData = "toggle";');
-		code.Append(TAB2).AppendLine('toggle.checkEvents.push(clickEventHandler);');
-		
-		code.Append(TAB1).AppendLine('},');
+		// code.Append(TAB1).AppendLine('addToggleClick: function (toggle) {');
+		//
+		// code.Append(TAB2).AppendLine('var clickEventHandler = new cc.Component.EventHandler();');
+		// code.Append(TAB2).AppendLine('clickEventHandler.target = this.node;');
+        // code.Append(TAB2).AppendLine('clickEventHandler.component = "'+className+'";');
+        // code.Append(TAB2).AppendLine('clickEventHandler.handler = "onToggleClick";');
+		// code.Append(TAB2).AppendLine('clickEventHandler.customEventData = "toggle";');
+		// code.Append(TAB2).AppendLine('toggle.checkEvents.push(clickEventHandler);');
+		//
+		// code.Append(TAB1).AppendLine('},');
 		
 		code.Append(TAB1).AppendLine('onToggleClick:function (target,customEventData) {');
 		code.Append(TAB2).AppendLine('this._super();');
@@ -644,20 +644,20 @@ module.exports = {
 		
 		
 		
-		code.Append(TAB1).AppendLine('addSlideEvent:function (slider) {')
-        code.Append(TAB2).AppendLine('var eventHandler = new cc.Component.EventHandler();')
-        code.Append(TAB2).AppendLine('eventHandler.target = this.node;')
-        code.Append(TAB2).AppendLine('eventHandler.component = "'+className+'";');
-		code.Append(TAB2).AppendLine('eventHandler.handler = "onSlideEvent";')
-        code.Append(TAB2).AppendLine('slider.slideEvents.push(eventHandler);')
-		code.Append(TAB1).AppendLine('},')
-		code.Append(TAB1).AppendLine('onSlideEvent:function (sender, eventType) {')
-		code.Append(TAB2).AppendLine('this._super();')
-		code.Append(TAB2).AppendLine('this.onSlideEventBack(sender, eventType);')
-		code.Append(TAB1).AppendLine('},')
-		code.Append(TAB1).AppendLine('onSlideEventBack:function (sender, eventType) {')
-			
-		code.Append(TAB1).AppendLine('},')
+		// code.Append(TAB1).AppendLine('addSlideEvent:function (slider) {');
+        // code.Append(TAB2).AppendLine('var eventHandler = new cc.Component.EventHandler();');
+        // code.Append(TAB2).AppendLine('eventHandler.target = this.node;');
+        // code.Append(TAB2).AppendLine('eventHandler.component = "'+className+'";');
+		// code.Append(TAB2).AppendLine('eventHandler.handler = "onSlideEvent";');
+        // code.Append(TAB2).AppendLine('slider.slideEvents.push(eventHandler);');
+		// code.Append(TAB1).AppendLine('},');
+		code.Append(TAB1).AppendLine('onSlideEvent:function (sender, eventType) {');
+		code.Append(TAB2).AppendLine('this._super();');
+		code.Append(TAB2).AppendLine('this.onSlideEventBack(sender, eventType);');
+		code.Append(TAB1).AppendLine('},');
+		code.Append(TAB1).AppendLine('onSlideEventBack:function (sender, eventType) {');
+        code.Append(TAB2).AppendLine('//need extend');
+		code.Append(TAB1).AppendLine('},');
 		
 		
 		
